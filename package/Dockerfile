@@ -1,6 +1,10 @@
 FROM rancher/agent-base:v0.3.0
 RUN apt-get update && \
-    apt-get install -y vim wget bash-completion unzip
+    apt-get install -y vim wget bash-completion unzip \
+    python-pip \
+    python-yaml   \
+    python-jinja2 \
+    gdebi
 RUN wget -O /usr/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubectl && \
     chmod +x /usr/bin/kubectl
 RUN wget -O helm.tar.gz http://storage.googleapis.com/kubernetes-helm/helm-v2.3.0-linux-amd64.tar.gz && \
@@ -13,6 +17,8 @@ RUN wget -O /usr/bin/update-rancher-ssl https://raw.githubusercontent.com/ranche
 ENV KUBE_SERVER http://localhost:8080
 COPY kubectld kubectld.sh kubectl-shell.sh kubectl-shell-entry.sh shell-setup.sh /usr/bin/
 COPY completion/kubectl /etc/bash_completion.d/
+COPY deb/* /etc/deb/
+RUN gdebi -q -n /etc/deb/acc-provision_1.0.2-4_amd64.deb
 ENV SERVER http://localhost:8080
 ENV LISTEN :8091
 CMD ["kubectld.sh"]
